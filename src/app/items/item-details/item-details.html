@@ -1,0 +1,37 @@
+<div>
+    <h1>{{ item.name }}</h1>
+    <img [src]="imageUrl" alt="{{ item.name }}" class="item-image">
+    @if (newItem || editMode) {
+        <button mat-button="outlined" (click)="autocompleteDetails()">Autocomplete</button>
+    }
+    <p>{{ item.description }}</p>
+    @if (user.role === 'admin') {
+        <p>{{getItemOwner(item)}}</p>
+
+    }
+     <caption>Other properties</caption> <button matIconButton aria-label="Add new white space property"><mat-icon>more_vert</mat-icon></button>
+    <table mat-table [dataSource]="getAdditionalDataList()" class="mat-elevation-z8">
+        <ng-container matColumnDef="key">
+            <td mat-cell *matCellDef="let element"> {{element.key}} </td>
+        </ng-container>
+        <ng-container matColumnDef="value">
+            <td mat-cell *matCellDef="let element"> {{element.value}} </td>
+        </ng-container>
+        <ng-container matColumnDef="value">
+            <td mat-cell *matCellDef="let element"> <button matIconButton aria-label="Delete this property" (click)="deleteOtherProperty(element)"><mat-icon>more_vert</mat-icon></button> </td>
+        </ng-container>
+    </table>
+
+
+    <!-- buttons -->
+    @if (newItem || editMode) {
+        <button mat-button="outlined" (click)="save()">Save</button>
+    }
+    @if (newItem) {
+        <button mat-button="outlined" (click)="cancel()">Cancel</button>
+    }
+    @if (!newItem && !editMode) {
+        <button mat-button="outlined" (click)="editItem()">Edit</button>
+        <button mat-button="outlined" (click)="deleteItem()">Delete</button>
+    }
+</div>
