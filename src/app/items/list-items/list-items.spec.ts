@@ -1,0 +1,23 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { ListItems } from './list-items';
+
+describe('ListItems', () => {
+  let component: ListItems;
+  let fixture: ComponentFixture<ListItems>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [ListItems]
+    })
+    .compileComponents();
+
+    fixture = TestBed.createComponent(ListItems);
+    component = fixture.componentInstance;
+    await fixture.whenStable();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

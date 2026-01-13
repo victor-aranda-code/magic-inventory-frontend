@@ -1,0 +1,52 @@
+<app-header [userLoggedIn]="user"></app-header>
+@if (user.role === 'ADMIN') {
+<div class="admin">
+    <h3>Admin tools</h3>
+    <table>
+        <tr>
+            <td>Users</td>
+            <td>Items</td>
+        </tr>
+        <tr>
+            <div class="example-button-row">
+                <td><button matButton="filled">List all users</button></td>
+                <td><button matButton="filled">List all items</button></td>
+            </div>
+        </tr>
+        <tr>
+            <td>
+                <mat-form-field>
+                    <input matInput type="search" placeholder="Search users">
+                    <button mat-icon-button matFab matSuffix aria-label="Search">
+                        <mat-icon>search</mat-icon>
+                    </button>
+                </mat-form-field>
+            </td>
+            <td>
+                <mat-form-field>
+                    <input matInput type="search" placeholder="Search items">
+                    <button mat-icon-button matSuffix aria-label="Search">
+                        <mat-icon>search</mat-icon>
+                    </button>
+                </mat-form-field>
+            </td>
+        </tr>
+    </table>
+</div>
+}
+<br>
+@if (user.role === 'ADMIN') {
+<h3>Actions</h3>
+<button matButton="filled">Add item</button>
+} @else {
+    <div class="user-actions">
+        <button matButton="filled" (click)="addItem()">Add item</button>
+        <button matButton="filled" (click)="listAllItems()">List all items</button>
+        <mat-form-field>
+            <input #inputRef matInput type="search" placeholder="Search items" >
+            <button (click)="searchItems(inputRef.value)" mat-icon-button matSuffix aria-label="Search">
+                <mat-icon>search</mat-icon>
+            </button>
+        </mat-form-field>
+    </div>
+}
