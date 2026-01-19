@@ -1,13 +1,6 @@
+<app-header [userLoggedIn]="user"></app-header>
 <mat-grid-list cols="3" rowHeight="100px">
     <mat-grid-tile *ngFor="let item of items">
-        <mat-card (click)="onItemSelect(item)">
-              <img mat-card-image src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUA
-    AAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO
-        9TXL0Y4OHwAAAABJRU5ErkJggg==" />
-            <mat-card-title>{{ item.name }}</mat-card-title>
-            <mat-card-content>
-                <p>{{ item.description }}</p>
-            </mat-card-content>
-        </mat-card>
+        <app-card-item [item]="item"></app-card-item>
     </mat-grid-tile>
 </mat-grid-list>

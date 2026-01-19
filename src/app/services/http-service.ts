@@ -1,12 +1,12 @@
-import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
+import { HttpClient, HttpHeaders, HttpParams, HttpResponse } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { map, Observable } from "rxjs";
-import { User } from "../classes/User";
+import { User } from "../models/User";
 import { RegisterRequest } from "../models/RegisterRequest";
 import { LoginRequest } from "../models/LoginRequest";
 import { AuthResponse } from "../models/AuthResponse";
 import { environment } from "../../environments/environment";
-import { Item } from "../classes/Item";
+import { Item } from "../models/Item";
 @Injectable({ providedIn: 'root' })
 
 export class HttpService {
@@ -30,7 +30,7 @@ export class HttpService {
         let options = {
             headers: this.headers,
             params: this.params,
-            responseType: 'json' as const,
+            responseType: 'json' as const
         };
         return options;
     }
@@ -51,7 +51,7 @@ export class HttpService {
         return this.http.get<User[]>(this.url + this.INVENTORY_PREFIX + '/users', this.createOptions());
     }
 
-    findItemById(id: number): Observable<Item> {
+    findItemById(id: string): Observable<Item> {
         return this.http.get<Item>(this.url + this.INVENTORY_PREFIX + '/items/' + id, this.createOptions());
     }
 
@@ -65,8 +65,8 @@ export class HttpService {
     updateItem(item: Item): Observable<Item> {
         return this.http.put<Item>(this.url + this.INVENTORY_PREFIX + '/items/' + item.id, item, this.createOptions());
     }
-    deleteItem(id: number): Observable<Item> {
-        return this.http.delete<Item>(this.url + this.INVENTORY_PREFIX + '/items/' + id, this.createOptions());
+    deleteItem(id: string): Observable<void> {
+        return this.http.delete<void>(this.url + this.INVENTORY_PREFIX + '/items/' + id, this.createOptions());
     }
     editUser(user: User): Observable<User> {
         return this.http.put<User>(this.url + '/user/' + user.id, user, this.createOptions());
@@ -75,23 +75,27 @@ export class HttpService {
         return this.http.delete<User>(this.url + '/user/' + id, this.createOptions());
     }
 
-    addImage(itemId: string, image: string): Observable<string> {
-        const options = this.createOptions();
-        options.params.set('image', image);
-        options.params.set('itemId', itemId);
-        options.headers.set('Content-Type', 'multipart/form-data');
-
-        return this.http.post<string>(this.url + this.INVENTORY_PREFIX + '/images', options);
+    addImage(itemId: string, image: string): Observable<Item> {
+        this.resetOptions();
+        const options = {
+        };
+        var fd = new FormData();
+        fd.append('image', image);
+        fd.append('itemId', itemId);
+        return this.http.post<Item>(this.url + this.INVENTORY_PREFIX + '/images', fd, options);
+    }
+    deleteImage(imageId: string): Observable<string> {
+        return this.http.delete<string>(this.url + this.INVENTORY_PREFIX + '/images/' + imageId, this.createOptions());
     }
 
     getImage(imageId: string): Observable<Blob> {
-        const options = this.createOptions();
-        options.responseType = 'blob' as 'json';
-        return this.http.get<Blob>(this.url + this.INVENTORY_PREFIX + '/images/' + imageId, options);
+        this.resetOptions()
+        const options = {
+            headers: this.headers,
+            params: this.params,
+            //observe: 'response' as const,
+            responseType: 'blob' as const
+        };
+        return this.http.get(this.url + this.INVENTORY_PREFIX + '/images/' + imageId, options);
     }
-
-
-
-
-
 }

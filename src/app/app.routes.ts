@@ -4,12 +4,11 @@ import { ListItems } from './items/list-items/list-items';
 import { Login } from './authentication/login/login';
 import { Register } from './authentication/login/register/register';
 import { ItemDetails } from './items/item-details/item-details';
+import { ManageUsers } from './manage-users/manage-users';
+
+import { AuthGuard } from './utils/auth-guard';
 
 export const routes: Routes = [
-    {
-        path: '',
-        component: Login
-    },
     {
         path: 'login',
         component: Login
@@ -17,11 +16,18 @@ export const routes: Routes = [
     {
         path: 'home',
         component: Home,
+        canActivate: [AuthGuard],
         data: { user: 'User' }
     },
     {
+        path: '',
+        redirectTo: 'home',
+        pathMatch: 'full'
+    },
+    {
         path: 'items',
-        component: ListItems
+        component: ListItems,
+        canActivate: [AuthGuard]
     },
     {
         path: 'register',
@@ -29,10 +35,21 @@ export const routes: Routes = [
     },
     {
         path: 'items/new',
-        component: ItemDetails
-    },  
+        component: ItemDetails,
+        canActivate: [AuthGuard]
+    },
     {
         path: 'items/:id',
-        component: ItemDetails
+        component: ItemDetails,
+        canActivate: [AuthGuard]
     },
+    {
+        path: 'users',
+        component: ManageUsers,
+        canActivate: [AuthGuard]
+    },
+    {
+        path: '**',
+        redirectTo: 'home'
+    }
 ];
