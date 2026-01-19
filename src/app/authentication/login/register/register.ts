@@ -3,17 +3,18 @@ import { MatFormField, MatLabel } from "@angular/material/form-field";
 import { MatIcon } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
 import { FormsModule } from "@angular/forms";
-import { User } from '../../../classes/User';
+import { User } from '../../../models/User';
 import { AuthResponse } from '../../../models/AuthResponse';
 import { AuthService } from '../../../services/auth-service';
 import { Router } from "@angular/router";
 import { Role } from '../../../models/Role';
-
+import { JwtHelperService } from '@auth0/angular-jwt';
+import { AuthUtils } from '../../../utils/auth-utils';
 @Component({
   selector: 'app-register',
   imports: [MatFormField, MatIcon, MatLabel, MatInputModule, FormsModule],
   templateUrl: './register.html',
-  styleUrl: './register.css', 
+  styleUrl: './register.css',
 })
 export class Register {
   passwordVisible = true;
@@ -48,9 +49,7 @@ export class Register {
     this.authService.registerUser({ username: this.username, password: this.password, role: Role.USER }).subscribe({
       next: (authResponse: AuthResponse) => {
         console.log("User registered");
-        localStorage.setItem('jwt_token', authResponse.token);
-        localStorage.setItem('user', this.username);
-        localStorage.setItem('role', Role.USER.toString());
+        AuthUtils.saveToken(authResponse);
         this.router.navigate(['/home']);
       },
       error: (err: any) => console.error('Could not register', err)

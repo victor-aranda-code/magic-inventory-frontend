@@ -1,8 +1,8 @@
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
-import { Item } from "../classes/Item";
+import { Item } from "../models/Item";
 import { map, Observable } from "rxjs";
-import { User } from "../classes/User";
+import { User } from "../models/User";
 import { RegisterRequest } from "../models/RegisterRequest";
 import { LoginRequest } from "../models/LoginRequest";
 import { AuthResponse } from "../models/AuthResponse";
@@ -34,10 +34,22 @@ export class AuthService {
 
 
     registerUser(user: RegisterRequest): Observable<AuthResponse> {
-        return this.http.post<AuthResponse>(this.url + '/register', user, this.createOptions());
+        return this.http.post<AuthResponse>(this.url + '/auth/register', user, this.createOptions());
     }
     login(user: LoginRequest): Observable<AuthResponse> {
-        return this.http.post<AuthResponse>(this.url + '/login', user, this.createOptions());
+        return this.http.post<AuthResponse>(this.url + '/auth/login', user, this.createOptions());
+    }
+    getUserById(id: number): Observable<User> {
+        return this.http.get<User>(this.url + '/users/' + id, this.createOptions());
+    }
+    getAllUsers(): Observable<User[]> {
+        return this.http.get<User[]>(this.url + '/users', this.createOptions());
+    }
+    deleteUser(id: string): Observable<void> {
+        return this.http.delete<void>(this.url + '/users/' + id, this.createOptions());
+    }
+    updateUser(user: User): Observable<void> {
+        return this.http.put<void>(this.url + '/users/' + user.id, user, this.createOptions());
     }
 
 

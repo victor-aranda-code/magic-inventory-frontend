@@ -1,0 +1,9 @@
+<mat-card (click)="onItemSelect(item)">
+    @if (imageUrl !== "") {
+        <img mat-card-image [src]="imageUrl" />
+    }
+    <mat-card-title>{{ item.name }}</mat-card-title>
+    <mat-card-content>
+        <p>{{ item.description?.substring(0, 50) }}</p>
+    </mat-card-content>
+</mat-card>
