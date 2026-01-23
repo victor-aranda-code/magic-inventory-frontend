@@ -9,9 +9,10 @@ import { Item } from '../models/Item';
 import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { Role } from '../models/Role';
+import { MatButtonModule } from '@angular/material/button';
 @Component({
     selector: 'app-home',
-    imports: [Header, MatFormFieldModule, MatInputModule, MatIconModule],
+    imports: [Header, MatFormFieldModule, MatInputModule, MatIconModule, MatButtonModule],
     templateUrl: './home.html',
     styleUrl: './home.css',
 })

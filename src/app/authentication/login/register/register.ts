@@ -10,6 +10,7 @@ import { Router } from "@angular/router";
 import { Role } from '../../../models/Role';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { AuthUtils } from '../../../utils/auth-utils';
+import { ChangeDetectorRef } from '@angular/core';
 @Component({
   selector: 'app-register',
   imports: [MatFormField, MatIcon, MatLabel, MatInputModule, FormsModule],
@@ -23,13 +24,18 @@ export class Register {
   confirmPassword: string;
   authService: AuthService;
   router: Router;
+  passwordsDoNotMatch = false;
+  userErrorMessage: string;
+  cdr: ChangeDetectorRef;
 
-  constructor(authService: AuthService, router: Router) {
+  constructor(authService: AuthService, router: Router, cdr: ChangeDetectorRef) {
     this.username = "";
     this.password = "";
     this.confirmPassword = "";
     this.authService = authService;
     this.router = router;
+    this.cdr = cdr;
+    this.userErrorMessage = "";
   }
 
   clickEvent(event: MouseEvent) {
@@ -39,10 +45,23 @@ export class Register {
   hidePassword() {
     return this.passwordVisible;
   }
+
+  checkPasswords() {
+    this.passwordsDoNotMatch = this.password !== this.confirmPassword;
+    if(this.confirmPassword.length === 0) {
+      this.userErrorMessage = "";
+    } else {
+      this.userErrorMessage = this.passwordsDoNotMatch ? "Passwords do not match" : "";
+    }
+    this.cdr.detectChanges();
+  }
+
   register() {
-    console.log("Call Register");
-    if (this.password !== this.confirmPassword) {
+    this.checkPasswords();
+    if (this.passwordsDoNotMatch) {
       console.log("Passwords do not match");
+      this.userErrorMessage = "Passwords do not match";
+      this.cdr.detectChanges();
       return;
     }
 
@@ -52,7 +71,15 @@ export class Register {
         AuthUtils.saveToken(authResponse);
         this.router.navigate(['/home']);
       },
-      error: (err: any) => console.error('Could not register', err)
+      error: (err: any) => {
+        if(err.status === 409) {
+          this.userErrorMessage = "Error: User already exists";
+        } else {
+          this.userErrorMessage = "Error: Could not register user";
+        }
+        console.error('Could not register', err)
+        this.cdr.detectChanges();
+      }
     });
   }
 }

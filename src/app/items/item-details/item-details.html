@@ -1,127 +1,184 @@
 <app-header [userLoggedIn]="user"></app-header>
-<div class="container">
+
+<main class="item-details-container">
     @if (item) {
-    @if (!newItem && !editMode) {
-    <div class="field-row">
-        Name {{item.name}}<br>
-    </div>
-    <div class="field-row">
-        Category {{item.category}}<br>
-    </div>
-    <div class="field-row">
-        Description {{item.description}}<br>
-    </div>
-    <div class="field-row">
-        Created on {{item.created}}<br>
-    </div>
-    <div class="field-row">
-        Location {{item.location}}<br>
-    </div>
-    @if (imageUrl) {
-        <img [src]="imageUrl" alt="Item image" /><br>
-    }
-    @if (user.role === Role.ADMIN) {
-    <p>Owner {{ owner?.username }}</p>
-    }
-    <div class="actions">
-        <button mat-stroked-button (click)="editItem()">Edit</button>
-        <button mat-stroked-button (click)="deleteItem()">Delete</button>
-    </div>
-    @if (item.additionalData.size > 0) {
-        <table mat-table [dataSource]="additionalDataList" class="mat-elevation-z8">
-            <ng-container matColumnDef="key">
-                <th mat-header-cell *matHeaderCellDef> Property </th>
-                <td mat-cell *matCellDef="let element; let i = index">
-                    <input matInput [(ngModel)]="element.key" [readonly]="!editMode && !newItem" />
-                </td>
-            </ng-container>
-            <ng-container matColumnDef="value">
-                <th mat-header-cell *matHeaderCellDef> Value </th>
-                <td mat-cell *matCellDef="let element; let i = index">
-                    <input matInput [(ngModel)]="element.value" [readonly]="!editMode && !newItem" />
-                </td>
-            </ng-container>
-            <!-- Header Row -->
-            <tr mat-header-row *matHeaderRowDef="displayedColumnsReadOnly"></tr>
-            <!-- Data Row -->
-            <tr mat-row *matRowDef="let row; columns: displayedColumnsReadOnly;"></tr>
-        </table>
-    }
-    } @else {
-    @if (newItem) {
-    <h1>New item</h1>
-    }
+    <div class="details-card">
+        <div class="header-section">
+            <div class="title-group">
+                @if (newItem) {
+                <h1>New Item</h1>
+                } @else {
+                <h1>{{ item.name || 'Untitled Item' }}</h1>
+                <p class="category-tag">{{ item.category || 'No Category' }}</p>
+                }
+            </div>
 
-    <div class="field-row">
-        Name <input matInput [(ngModel)]="item.name" [readonly]="!editMode && !newItem" /><br>
-    </div>
-    <div class="field-row">
-        Category <input matInput [(ngModel)]="item.category" [readonly]="!editMode && !newItem" /><br>
-    </div>
-    <div class="field-row">
-        Description <input matInput [(ngModel)]="item.description" [readonly]="!editMode && !newItem" /><br>
-    </div>
-    <div class="field-row">
-        Created on {{item.created}}<br>
-    </div>
-    <div class="field-row">
-        Location <input matInput [(ngModel)]="item.location" [readonly]="!editMode && !newItem" /><br>
-    </div>
-
-    @if (newItem || editMode) {
-    <button mat-stroked-button (click)="autocompleteDetails()">Autocomplete</button>
-    }
-    @if (newItem || editMode) {
-    <input type="file" id="file" (change)="onImageChanged($event)" />
-    }
-
-    <caption>Other properties</caption>
-    @if (newItem || editMode) {
-    <button mat-icon-button aria-label="Add new property" (click)="addOtherProperty()"><mat-icon>add</mat-icon></button>
-    }
-    @if (additionalDataList.length > 0) {
-    <table mat-table [dataSource]="additionalDataList" class="mat-elevation-z8">
-        <ng-container matColumnDef="key">
-            <th mat-header-cell *matHeaderCellDef> Property </th>
-            <td mat-cell *matCellDef="let element; let i = index">
-                <input matInput [(ngModel)]="element.key" [readonly]="!editMode && !newItem" />
-            </td>
-        </ng-container>
-        <ng-container matColumnDef="value">
-            <th mat-header-cell *matHeaderCellDef> Value </th>
-            <td mat-cell *matCellDef="let element; let i = index">
-                <input matInput [(ngModel)]="element.value" [readonly]="!editMode && !newItem" />
-            </td>
-        </ng-container>
-        <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef> Actions </th>
-            <td mat-cell *matCellDef="let element; let i = index">
-                @if (newItem || editMode) {
-                <button mat-icon-button (click)="deleteOtherProperty(i)">
-                    <mat-icon>delete</mat-icon>
+            <div class="header-actions">
+                @if (!newItem && !editMode) {
+                <button mat-icon-button color="primary" (click)="editItem()" title="Edit item">
+                    <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="deleteItem()" title="Delete item">
+                    <mat-icon>delete_outline</mat-icon>
                 </button>
                 }
-            </td>
-        </ng-container>
+            </div>
+        </div>
 
-        <!-- Header Row -->
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <!-- Data Row -->
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
-    }
+        <div class="content-grid">
+            <!-- Left Column: Image -->
+            <div class="image-section">
+                <div class="image-wrapper" [class.editable]="newItem || editMode">
+                    @if (imageUrl) {
+                    <img [src]="imageUrl" alt="Item image" />
+                    } @else {
+                    <div class="image-placeholder">
+                        <mat-icon>image</mat-icon>
+                        <span>No image available</span>
+                    </div>
+                    }
 
-    <!-- buttons -->
-    <div class="actions">
+                    @if (newItem || editMode) {
+                    <div class="file-input-overlay">
+                        <button mat-fab color="primary" (click)="fileInput.click()">
+                            <mat-icon>photo_camera</mat-icon>
+                        </button>
+                        <button mat-fab color="primary" (click)="deleteImage()">
+                            <mat-icon>delete_outline</mat-icon>
+                        </button>
+                        <input #fileInput type="file" (change)="onImageChanged($event)" hidden />
+                    </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Right Column: Basic Info -->
+            <div class="info-section">
+                <div class="info-grid">
+                    @if (!newItem && !editMode) {
+                    <div class="detail-item">
+                        <label>Description</label>
+                        <p>{{ item.description || 'No description provided.' }}</p>
+                    </div>
+                    <div class="detail-item">
+                        <label>Location</label>
+                        <p><mat-icon>location_on</mat-icon> {{ item.location || 'Unknown' }}</p>
+                    </div>
+                    <div class="detail-item">
+                        <label>Created On</label>
+                        <p>{{ item.created | date:'mediumDate' }}</p>
+                    </div>
+                    @if (user.role === Role.ADMIN && owner) {
+                    <div class="detail-item">
+                        <label>Owner</label>
+                        <p><mat-icon>person</mat-icon> {{ owner.username }}</p>
+                    </div>
+                    }
+                    } @else {
+                    <mat-form-field appearance="outline">
+                        <mat-label>Item Name</mat-label>
+                        <input matInput [(ngModel)]="item.name" />
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Category</mat-label>
+                        <input matInput [(ngModel)]="item.category" />
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Location</mat-label>
+                        <input matInput [(ngModel)]="item.location" />
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Description</mat-label>
+                        <textarea matInput [(ngModel)]="item.description" rows="3"></textarea>
+                    </mat-form-field>
+
+                    <button mat-stroked-button class="btn-autocomplete" (click)="autocompleteDetails()">
+                        <mat-icon>auto_fix_high</mat-icon> Autocomplete </button>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Properties Table -->
+        <div class="additional-data-section">
+            <div class="section-header">
+                <h2>Attributes</h2>
+                @if (newItem || editMode) {
+                <button mat-icon-button (click)="addOtherProperty()" color="primary">
+                    <mat-icon>add_circle</mat-icon>
+                </button>
+                }
+            </div>
+
+            @if (additionalDataList.length > 0 || newItem || editMode) {
+            <div class="table-card">
+                <table mat-table [dataSource]="additionalDataList">
+                    <ng-container matColumnDef="key">
+                        <th mat-header-cell *matHeaderCellDef> Attribute </th>
+                        <td mat-cell *matCellDef="let element">
+                            <span class="key-attribute">
+                                @if (newItem || editMode) {
+                                <input matInput [(ngModel)]="element.key" placeholder="e.g. Color" />
+                                } @else {
+                                {{ element.key }}
+                                }
+                            </span>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="value">
+                        <th mat-header-cell *matHeaderCellDef> Value </th>
+                        <td mat-cell *matCellDef="let element">
+                            <span class="value-attribute">
+                                @if (newItem || editMode) {
+                                <input matInput [(ngModel)]="element.value" placeholder="Value" />
+                                } @else {
+                                {{ element.value }}
+                                }
+                            </span>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="actions">
+                        <th mat-header-cell *matHeaderCellDef></th>
+                        <td mat-cell *matCellDef="let element; let i = index">
+                            @if (newItem || editMode) {
+                            <button mat-icon-button color="warn" (click)="deleteOtherProperty(i)">
+                                <mat-icon>remove_circle_outline</mat-icon>
+                            </button>
+                            }
+                        </td>
+                    </ng-container>
+
+                    <tr mat-header-row
+                        *matHeaderRowDef="(newItem || editMode) ? displayedColumns : displayedColumnsReadOnly"></tr>
+                    <tr mat-row
+                        *matRowDef="let row; columns: (newItem || editMode) ? displayedColumns : displayedColumnsReadOnly;">
+                    </tr>
+                </table>
+            </div>
+            } @else {
+            <p class="empty-state">No additional attributes found</p>
+            }
+        </div>
+
+        <!-- Footer Actions -->
         @if (newItem || editMode) {
-        <button mat-stroked-button (click)="save()">Save</button>
-        }
-        @if (newItem || editMode) {
-        <button mat-stroked-button (click)="cancel()">Cancel</button>
+        <div class="form-actions">
+            <button mat-stroked-button (click)="cancel()">Cancel</button>
+            <button mat-flat-button class="btn-save" (click)="save()">
+                <mat-icon>save</mat-icon> Save Artifact
+            </button>
+        </div>
         }
     </div>
-    }
     } @else {
-    <p>Loading item details...</p>
+    <div class="loading-state">
+        <mat-icon class="pulse">inventory_2</mat-icon>
+        <p>Loading item details...</p>
+    </div>
     }
-</div>
+</main>

@@ -5,4 +5,34 @@
     height: 100vh;
     width: 30vw;
     margin: auto;
+    gap: 5px;
+}
+
+.password-toggle-button {
+    margin-right: 5px;
+    background-color: #f0e9e5;
+    border-radius: 5px;
+    border: none;
+    transition: all 0.3s ease;
+    background: transparent;
+
+}
+.password-toggle-button:hover {
+    cursor: pointer;
+    background-color: #f0e9e581;
+}
+
+.register-button {
+    border-radius: 5px;
+    cursor: pointer;
+    height: 30px;
+    width: 150px;
+    border: none;
+    background-color: #f39d9d;
+    transition: all 0.3s ease;
+}
+.register-button:hover {
+    background: rgb(240, 210, 227);
+    border-color: rgba(255, 0, 0, 0.4);
+    transform: translateY(-1px);
 }

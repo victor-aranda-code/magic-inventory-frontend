@@ -1,9 +1,23 @@
-<mat-card (click)="onItemSelect(item)">
-    @if (imageUrl !== "") {
-        <img mat-card-image [src]="imageUrl" />
-    }
-    <mat-card-title>{{ item.name }}</mat-card-title>
-    <mat-card-content>
-        <p>{{ item.description?.substring(0, 50) }}</p>
-    </mat-card-content>
+<mat-card (click)="onItemSelect(item)" class="card-item">
+    <div class="image-container">
+        @if (imageUrl) {
+        <img [src]="imageUrl" class="card-image" alt="Item artifact" />
+        } @else {
+        <div class="image-placeholder">
+            <mat-icon>inventory_2</mat-icon>
+        </div>
+        }
+    </div>
+
+    <div class="content-section">
+        <h3 class="card-title">{{ item.name }}</h3>
+        <p class="card-description">{{ item.description?.substring(0, 80) }}{{ (item.description?.length ?? 0) > 80 ?
+            '...' : '' }}</p>
+    </div>
+
+    <div class="card-footer">
+        @if (item.category) {
+            <span class="category-badge">{{ item.category }}</span>
+        }
+    </div>
 </mat-card>

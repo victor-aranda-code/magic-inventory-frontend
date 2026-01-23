@@ -1,53 +1,84 @@
 <app-header [userLoggedIn]="user"></app-header>
-@if (user.role === Role.ADMIN) {
-<div class="admin">
-    <h3>Admin tools</h3>
-    <table>
-        <tr>
-            <td>Users</td>
-            <td>Items</td>
-        </tr>
-        <tr>
-            <div class="example-button-row">
-                <td><button matButton="filled" (click)="listAllUsers()">List all users</button></td>
-                <td><button matButton="filled" (click)="listAllItems()">List all items</button></td>
+
+<main class="home-container">
+
+    @if (user.role === Role.ADMIN) {
+    <section class="admin-panel">
+        <div class="section-header">
+            <mat-icon>admin_panel_settings</mat-icon>
+            <h2>Admin Dashboard</h2>
+        </div>
+
+        <div class="admin-tools-grid">
+            <div class="tool-card">
+                <h3>User Management</h3>
+                <p>Manage access and permissions for all users.</p>
+                <div class="tool-actions">
+                    <button mat-flat-button (click)="listAllUsers()">
+                        <mat-icon>people</mat-icon> List Users
+                    </button>
+                    <!--<mat-form-field appearance="outline" class="search-field">
+                        <mat-label>Search users</mat-label>
+                        <input matInput type="search" #userFilter (keyup.enter)="searchUsers(userFilter.value)">
+                        <button mat-icon-button matSuffix (click)="searchUsers(userFilter.value)">
+                            <mat-icon>search</mat-icon>
+                        </button>
+                    </mat-form-field> -->
+                </div>
             </div>
-        </tr>
-        <tr>
-            <td>
-                <mat-form-field>
-                    <input matInput type="search" placeholder="Search users" #userFilter>
-                    <button mat-icon-button matFab matSuffix aria-label="Search"
-                        (click)="searchUsers(userFilter.value)">
+
+            <div class="tool-card">
+                <h3>Inventory Control</h3>
+                <p>Oversee the entire collection of items.</p>
+                <div class="tool-actions">
+                    <button mat-flat-button (click)="listAllItems()">
+                        <mat-icon>inventory_2</mat-icon> List All Items
+                    </button>
+                    <mat-form-field appearance="outline" class="search-field">
+                        <mat-label>Search items</mat-label>
+                        <input matInput type="search" #itemFilter (keyup.enter)="searchItems(itemFilter.value)">
+                        <button mat-icon-button matSuffix (click)="searchItems(itemFilter.value)">
+                            <mat-icon>search</mat-icon>
+                        </button>
+                    </mat-form-field>
+                </div>
+            </div>
+        </div>
+    </section>
+    }
+
+    <section class="quick-actions">
+        <div class="section-header">
+            <mat-icon>bolt</mat-icon>
+            <h2>Quick Actions</h2>
+        </div>
+
+        <div class="actions-container">
+            @if (user.role === Role.ADMIN) {
+            <button class="action-card primary" (click)="addItem()">
+                <mat-icon>add_circle</mat-icon>
+                <span>Add New Item</span>
+            </button>
+            } @else {
+            <button class="action-card primary" (click)="addItem()">
+                <mat-icon>add_circle</mat-icon>
+                <span>Add New Item</span>
+            </button>
+            <button class="action-card secondary" (click)="listAllItems()">
+                <mat-icon>view_list</mat-icon>
+                <span>Browse Inventory</span>
+            </button>
+
+            <div class="search-box">
+                <mat-form-field appearance="outline">
+                    <mat-label>Quick search</mat-label>
+                    <input #inputRef matInput type="search" (keyup.enter)="searchItems(inputRef.value)">
+                    <button (click)="searchItems(inputRef.value)" mat-icon-button matSuffix>
                         <mat-icon>search</mat-icon>
                     </button>
                 </mat-form-field>
-            </td>
-            <td>
-                <mat-form-field>
-                    <input matInput type="search" placeholder="Search items" #itemFilter>
-                    <button mat-icon-button matSuffix aria-label="Search" (click)="searchItems(itemFilter.value)">
-                        <mat-icon>search</mat-icon>
-                    </button>
-                </mat-form-field>
-            </td>
-        </tr>
-    </table>
-</div>
-}
-<br>
-@if (user.role === Role.ADMIN) {
-<h3>Actions</h3>
-<button matButton="filled" (click)="addItem()">Add item</button>
-} @else {
-<div class="user-actions">
-    <button matButton="filled" (click)="addItem()">Add item</button>
-    <button matButton="filled" (click)="listAllItems()">List all items</button>
-    <mat-form-field>
-        <input #inputRef matInput type="search" placeholder="Search items">
-        <button (click)="searchItems(inputRef.value)" mat-icon-button matSuffix aria-label="Search">
-            <mat-icon>search</mat-icon>
-        </button>
-    </mat-form-field>
-</div>
-}
+            </div>
+            }
+        </div>
+    </section>
+</main>

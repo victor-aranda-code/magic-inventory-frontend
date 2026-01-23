@@ -22,9 +22,9 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
   styleUrl: './item-details.css',
 })
 export class ItemDetails {
+
   @Input('id') itemId?: string;
   @Input() item?: Item;
-  editedItem: Item;
   user: User;
   owner?: User;
   newItem: boolean = false;
@@ -33,13 +33,14 @@ export class ItemDetails {
   private httpService = inject(HttpService);
   private authService = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
-  imageUrl: SafeUrl;
+  imageUrl?: SafeUrl;
   image: File | undefined;
   router: Router;
   protected additionalDataList: { key: string, value: string }[] = [];
   protected displayedColumns: string[] = ['key', 'value', 'actions'];
   protected displayedColumnsReadOnly: string[] = ['key', 'value'];
   imageFile: string;
+  newImageFile: string;
   sanitizer: DomSanitizer;
 
   constructor(router: Router, sanitizer: DomSanitizer) {
@@ -48,32 +49,22 @@ export class ItemDetails {
     this.router = router;
     this.sanitizer = sanitizer;
     this.imageFile = "";
-    this.imageUrl = this.sanitizer.bypassSecurityTrustUrl('');
+    this.newImageFile = "";
+    this.imageUrl = undefined;
+
     this.user = new User(
       localStorage.getItem('username') || '',
       (localStorage.getItem('role') as Role) || Role.USER
     );
-    this.editedItem = Item.builder().build();
   }
 
   ngOnInit() {
-    if (this.itemId) {//Already existing item
-      this.httpService.findItemById(this.itemId).subscribe({
-        next: (item) => {
-          this.item = Item.fromJSON(item);
-          this.afterItemLoaded();
-          this.cdr.detectChanges();
-        },
-        error: (err) => {
-          console.error("Error loading item", err);
-          this.cdr.detectChanges();
-        }
-      });
+    if (this.itemId && this.itemId !== "") {//Already existing item
+      this.loadItem(this.itemId);
       this.newItem = false;
       this.editMode = false;
     } else if (!this.item) {//New item
       this.item = Item.builder().build();
-      this.editedItem = this.item.clone();
       if (this.router.url.includes('new')) {
         this.newItem = true;
       }
@@ -84,6 +75,19 @@ export class ItemDetails {
       this.afterItemLoaded();
     }
   }
+  loadItem(itemId: string) {
+    this.httpService.findItemById(itemId).subscribe({
+        next: (item) => {
+          this.item = Item.fromJSON(item);
+          this.afterItemLoaded();
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error("Error loading item", err);
+          this.cdr.detectChanges();
+        }
+      });
+  }
 
   afterItemLoaded() {
     if (this.item) {
@@ -92,6 +96,8 @@ export class ItemDetails {
       }
       if (this.item.imageId) {
         this.loadImage();
+      } else {
+        this.imageUrl = undefined;
       }
       if (this.item?.additionalData instanceof Map && this.item.additionalData.size > 0) {
         this.additionalDataList = Array.from(this.item.additionalData.entries()).map(([key, value]) => ({ key, value }));
@@ -107,10 +113,10 @@ export class ItemDetails {
       this.httpService.getImage(this.item.imageId + "").subscribe({
         next: (blob: Blob) => {
           // 1. Create a local URL for the blob
-            const objectURL = URL.createObjectURL(blob);
-            
-            // 2. Mark the URL as safe for Angular to use in [src]
-            this.imageUrl = this.sanitizer.bypassSecurityTrustUrl(objectURL);
+          const objectURL = URL.createObjectURL(blob);
+
+          // 2. Mark the URL as safe for Angular to use in [src]
+          this.imageUrl = this.sanitizer.bypassSecurityTrustUrl(objectURL);
           this.cdr.detectChanges();
         },
         error: (err: any) => {
@@ -145,7 +151,6 @@ export class ItemDetails {
   }
   editItem() {
     if (this.item) {
-      this.editedItem = this.item.clone();
       this.editMode = true;
     }
   }
@@ -155,6 +160,8 @@ export class ItemDetails {
     }
     if (this.editMode) {
       this.editMode = false;
+      this.newImageFile = "";
+      this.loadItem(this.itemId!);
     }
 
   }
@@ -174,11 +181,12 @@ export class ItemDetails {
       .withCreated(this.item.created)
       .withLocation(this.item.location)
       .withUserId(this.item.userId)
+      .withImageId(this.item.imageId)
       .build();
     itemToUpdate.additionalData = new Map<string, string>();
     //TODO: validate non duplicity of keys
     this.additionalDataList.forEach((item) => {
-      if (item.key) {
+      if (item.key && item.value) {
         itemToUpdate.additionalData.set(item.key, item.value);
       }
     });
@@ -201,19 +209,21 @@ export class ItemDetails {
         });
       }
     }
-    //Update image
+    
     if (!this.item || !this.item.id) {
       return;
     }
-    if (this.imageFile != null) {
-      this.httpService.addImage(this.item.id, this.imageFile).subscribe((updatedItem) => {
+    //Update image
+    if ((this.editMode || this.newItem) && this.imageUrl !== "") {
+      this.httpService.addImage(this.item.id, this.newImageFile).subscribe((updatedItem) => {
         if (this.item) {
           this.item.imageId = updatedItem.imageId;
           this.loadImage();
           this.cdr.detectChanges();
         }
       });
-    } else if (this.editMode && this.item.imageId) {
+    //Image deleted
+    } else if (this.editMode && (this.item.imageId != null && this.imageUrl === "")) {
       this.httpService.deleteImage(this.item.imageId).subscribe(() => {
         if (this.item) {
           this.item.imageId = "";
@@ -225,9 +235,23 @@ export class ItemDetails {
   }
 
   onImageChanged(event: any) {
-    this.imageFile = event.target.files[0];    
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
+      this.newImageFile = file;
+      // 1. Create a local URL for the blob
+      const objectURL = URL.createObjectURL(file);
+      // 2. Mark the URL as safe for Angular to use in [src]
+      this.imageUrl = this.sanitizer.bypassSecurityTrustUrl(objectURL);
+      this.cdr.detectChanges();
+    }
   }
   addOtherProperty() {
     this.additionalDataList = [...this.additionalDataList, { key: '', value: '' }];
+  }
+
+  deleteImage() {
+    this.newImageFile = "";
+    this.imageUrl = undefined;
+    this.cdr.detectChanges();
   }
 }
