@@ -1,0 +1,18 @@
+:host {
+    display: block;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #fffaf0 0%, #fff5e6 100%);
+}
+
+.list-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 10px;
+}
+
+.items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 15px;
+    justify-items: center;
+}

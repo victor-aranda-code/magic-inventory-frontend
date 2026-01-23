@@ -20,16 +20,10 @@ export class HttpService {
 
     constructor() { }
 
-    private resetOptions(): void {
-        this.headers = new HttpHeaders();
-        this.params = new HttpParams();
-        this.responseType = 'json';
-    }
     private createOptions() {
-        this.resetOptions()
         let options = {
-            headers: this.headers,
-            params: this.params,
+            headers: new HttpHeaders(),
+            params: new HttpParams(),
             responseType: 'json' as const
         };
         return options;
@@ -60,23 +54,29 @@ export class HttpService {
     }
 
     addItem(item: Item): Observable<Item> {
-        return this.http.post<Item>(this.url + this.INVENTORY_PREFIX + '/items', item, this.createOptions());
+        let options = this.createOptions();
+        options.headers = options.headers.set('Content-Type', 'application/json');
+        return this.http.post<Item>(this.url + this.INVENTORY_PREFIX + '/items', JSON.stringify(item), options);
     }
     updateItem(item: Item): Observable<Item> {
-        return this.http.put<Item>(this.url + this.INVENTORY_PREFIX + '/items/' + item.id, item, this.createOptions());
+        let options = this.createOptions();
+        options.headers = options.headers.set('Content-Type', 'application/json');
+        return this.http.put<Item>(this.url + this.INVENTORY_PREFIX + '/items/' + item.id, JSON.stringify(item), options);
     }
     deleteItem(id: string): Observable<void> {
-        return this.http.delete<void>(this.url + this.INVENTORY_PREFIX + '/items/' + id, this.createOptions());
+        let options = this.createOptions();
+        return this.http.delete<void>(this.url + this.INVENTORY_PREFIX + '/items/' + id, options);
     }
     editUser(user: User): Observable<User> {
-        return this.http.put<User>(this.url + '/user/' + user.id, user, this.createOptions());
+        let options = this.createOptions();
+        options.headers = options.headers.set('Content-Type', 'application/json');
+        return this.http.put<User>(this.url + '/user/' + user.id, JSON.stringify(user), options);
     }
     deleteUserByAdmin(id: number): Observable<User> {
         return this.http.delete<User>(this.url + '/user/' + id, this.createOptions());
     }
 
     addImage(itemId: string, image: string): Observable<Item> {
-        this.resetOptions();
         const options = {
         };
         var fd = new FormData();
@@ -89,7 +89,6 @@ export class HttpService {
     }
 
     getImage(imageId: string): Observable<Blob> {
-        this.resetOptions()
         const options = {
             headers: this.headers,
             params: this.params,

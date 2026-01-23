@@ -7,7 +7,7 @@
     <mat-form-field class="password-form-field">
         <mat-label>Enter your password</mat-label>
     <input matInput [type]="hidePassword() ? 'password' : 'text'" id="password" [(ngModel)]="password"/>
-    <button
+    <button class="password-toggle-button"
       matIconButton
       matSuffix
       (click)="clickEvent($event)"
@@ -17,6 +17,8 @@
       <mat-icon>{{hidePassword() ? 'visibility_off' : 'visibility'}}</mat-icon>
     </button>
   </mat-form-field>
-  <button mat-raised-button color="primary" (click)="login()">Login</button>
-  <button mat-raised-button color="primary" (click)="router.navigate(['/register']);">Register</button>
+  <p [hidden]="!wrongCredentials" style="color: red;">The credentials are incorrect</p>
+
+  <button mat-raised-button class="login-button" color="primary" (click)="login()">Login</button>
+  <button mat-raised-button class="register-button" color="primary" (click)="router.navigate(['/register']);">Register</button>
 </div>

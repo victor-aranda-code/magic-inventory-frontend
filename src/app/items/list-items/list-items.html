@@ -1,6 +1,6 @@
 <app-header [userLoggedIn]="user"></app-header>
-<mat-grid-list cols="3" rowHeight="100px">
-    <mat-grid-tile *ngFor="let item of items">
-        <app-card-item [item]="item"></app-card-item>
-    </mat-grid-tile>
-</mat-grid-list>
+<main class="list-container">
+    <div class="items-grid">
+        <app-card-item *ngFor="let item of items" [item]="item"></app-card-item>
+    </div>
+</main>

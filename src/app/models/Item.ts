@@ -57,6 +57,13 @@ export class Item {
             new Map(this.additionalData || new Map())
         );
     }
+
+    public toJSON(): any {
+        return {
+            ...this,
+            additionalData: Object.fromEntries(this.additionalData)
+        };
+    }
 }
 
 export class ItemBuilder {

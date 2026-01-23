@@ -9,9 +9,10 @@ import { AuthService } from '../services/auth-service';
 import { Header } from "../header/header";
 import { Role } from '../models/Role';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-manage-users',
-  imports: [MatCheckboxModule, MatIcon, MatButtonModule, MatTableModule, Header],
+  imports: [MatCheckboxModule, MatIcon, MatButtonModule, MatTableModule, Header, CommonModule],
   templateUrl: './manage-users.html',
   styleUrl: './manage-users.css',
 })
@@ -31,11 +32,11 @@ export class ManageUsers {
   constructor(router: Router) {
     this.router = router;
     this.user = new User(
-            localStorage.getItem('username') || '',
-            (localStorage.getItem('role') as Role) || Role.USER
-        );
+      localStorage.getItem('username') || '',
+      (localStorage.getItem('role') as Role) || Role.USER
+    );
     if (this.user.role !== Role.ADMIN) {
-        this.router.navigate(['/home']);
+      this.router.navigate(['/home']);
     }
   }
   cancelChanges() {
@@ -56,7 +57,7 @@ export class ManageUsers {
       const original = this.originalUsers.find((u: User) => u.id === user.id);
       if (original && user.isDifferent(original)) {
         const userWithOnlyDifferences = user.createUserWithOnlyDifferences(original);
-        userWithOnlyDifferences.password = undefined; 
+        userWithOnlyDifferences.password = undefined;
         this.authService.updateUser(userWithOnlyDifferences).subscribe();
       }
     });
@@ -72,7 +73,7 @@ export class ManageUsers {
       this.users = [...this.users]; // CRITICAL: Update reference to refresh mat-table
       this.isChangeToBeApplied = true;
       this.cdr.detectChanges();
-  }
+    }
   }
 
   updateEnabled(id: string, event: any) {

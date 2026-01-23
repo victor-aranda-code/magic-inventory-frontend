@@ -72,3 +72,16 @@
 .logout-btn:active {
     transform: translateY(0);
 }
+
+.home-btn {
+    background: transparent;
+    border: transparent;
+    color: #d66d52;
+    padding-top: 5px;
+    cursor: pointer;
+}
+
+.home-btn:hover {
+    background-color: rgba(255, 107, 107, 0.1);
+    border-radius: 50%;
+}

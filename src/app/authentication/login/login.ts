@@ -7,6 +7,7 @@ import { AuthService } from "../../services/auth-service";
 import { FormsModule } from "@angular/forms";
 import { AuthResponse } from '../../models/AuthResponse';
 import { AuthUtils } from '../../utils/auth-utils';
+import { ChangeDetectorRef } from '@angular/core';
 @Component({
   selector: 'app-login',
   imports: [MatFormField, MatIcon, MatLabel, MatInputModule, FormsModule],
@@ -19,19 +20,25 @@ export class Login {
   authService: AuthService;
   username: any;
   password: any;
-  constructor(router: Router, authService: AuthService) { this.router = router; this.authService = authService; }
+  wrongCredentials = false;
+  cdr: ChangeDetectorRef;
+  constructor(router: Router, authService: AuthService, cdr: ChangeDetectorRef) { this.router = router; this.authService = authService; this.cdr = cdr; }
   ngOnInit() {
     localStorage.clear();
   }
   login() {
-    console.log("Login");
+    this.wrongCredentials = false;
     //TODO: Implement login
     this.authService.login({ username: this.username, password: this.password }).subscribe({
       next: (authResponse: AuthResponse) => {
         AuthUtils.saveToken(authResponse);
         this.router.navigate(['/home']);
       },
-      error: (err) => console.error('Could not login', err)
+      error: (err) => {
+        this.wrongCredentials = true;
+        console.error('Could not login', err)
+        this.cdr.detectChanges();
+      }
     })
   }
 
