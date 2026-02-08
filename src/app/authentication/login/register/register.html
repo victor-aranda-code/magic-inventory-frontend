@@ -1,0 +1,52 @@
+<div class="register-wrapper">
+  <div class="register-card">
+    <header class="brand-header">
+      <h1>Register</h1>
+    </header>
+
+    <main class="form-container">
+      <mat-form-field appearance="outline" class="username-form-field">
+        <mat-label>Username</mat-label>
+        <input matInput type="text" [(ngModel)]="username" placeholder="Choose your secret identity" />
+        <mat-icon matPrefix style="margin-right: 8px;">person</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="password-form-field">
+        <mat-label>Password</mat-label>
+        <input matInput [type]="hidePassword() ? 'password' : 'text'" [(ngModel)]="password"
+          placeholder="Create a secure passphrase" (blur)="checkPasswords()" />
+        <mat-icon matPrefix style="margin-right: 8px;">lock</mat-icon>
+        <button class="password-toggle-button" matIconButton matSuffix (click)="clickEvent($event)"
+          [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword()">
+          <mat-icon>{{hidePassword() ? 'visibility_off' : 'visibility'}}</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="confirm-password-form-field">
+        <mat-label>Confirm Password</mat-label>
+        <input matInput [type]="hidePassword() ? 'password' : 'text'" [(ngModel)]="confirmPassword"
+          placeholder="Repeat your passphrase" (blur)="checkPasswords()" />
+        <mat-icon matPrefix style="margin-right: 8px;">verified_user</mat-icon>
+        <button class="password-toggle-button" matIconButton matSuffix (click)="clickEvent($event)"
+          [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword()">
+          <mat-icon>{{hidePassword() ? 'visibility_off' : 'visibility'}}</mat-icon>
+        </button>
+      </mat-form-field>
+
+      @if (userErrorMessage !== '') {
+      <div class="error-message">
+        {{userErrorMessage}}
+      </div>
+      }
+    </main>
+
+    <footer class="actions-container">
+      <button mat-flat-button class="register-button" (click)="register()">Sign Up</button>
+
+      <div class="login-link-container">
+        <span style="color: #8c7361;">Already have an account? </span>
+        <a class="login-link" (click)="router.navigate(['/login']);">Sign In Instead</a>
+      </div>
+    </footer>
+  </div>
+</div>

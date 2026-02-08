@@ -1,0 +1,351 @@
+:host {
+    display: block;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #fffaf0 0%, #fff5e6 100%);
+    color: #4a3728;
+    font-family: 'Outfit', 'Roboto', sans-serif;
+}
+
+.item-details-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.details-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(214, 109, 82, 0.1);
+    border-radius: 24px;
+    padding: 40px;
+    box-shadow: 0 10px 40px rgba(74, 55, 40, 0.05);
+}
+
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 32px;
+}
+
+.title-group h1 {
+    font-size: 2.4rem;
+    font-weight: 700;
+    margin: 10px;
+    color: #2d1e12;
+}
+
+.category-tag {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 4px 12px;
+    background: rgba(214, 109, 82, 0.1);
+    color: #d66d52;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+
+.content-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+/* Image Presentation */
+.image-section {
+    display: flex;
+    justify-content: center;
+}
+
+.image-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 8px 24px rgba(74, 55, 40, 0.08);
+    max-width: 50em;
+    max-height: 500px;
+}
+
+.image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.image-placeholder {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #8c7361;
+    background: #fffcf8;
+}
+
+.image-placeholder mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 12px;
+    opacity: 0.5;
+}
+
+.file-input-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    gap: 10px;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.image-wrapper.editable:hover .file-input-overlay {
+    opacity: 1;
+}
+
+/* Info Section */
+.info-section {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.info-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.detail-item label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #8c7361;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    letter-spacing: 0.05em;
+}
+
+.detail-item p {
+    font-size: 1.1rem;
+    margin: 0;
+    line-height: 1.5;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.detail-item mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: #d66d52;
+}
+
+/* Forms */
+mat-form-field {
+    width: 100%;
+}
+
+.btn-autocomplete {
+    border-color: #d66d52 !important;
+    color: #d66d52 !important;
+    border-radius: 12px !important;
+    height: 48px !important;
+    margin-top: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 10px !important;
+}
+
+.spinner {
+    display: inline-block;
+    margin-left: 20px;
+}
+
+.spinner ::ng-deep circle {
+    stroke: #d66d52 !important;
+}
+
+/* Additional Data Table */
+.additional-data-section {
+    margin-top: 24px;
+    padding-top: 32px;
+    border-top: 1px solid rgba(214, 109, 82, 0.1);
+}
+
+.additional-data-section .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.additional-data-section h2 {
+    font-size: 1.3rem;
+    margin: 0;
+    color: #2d1e12;
+}
+
+.table-container {
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(214, 109, 82, 0.1);
+}
+
+.mat-mdc-table {
+    background: transparent !important;
+}
+
+.mat-mdc-header-cell {
+    background: #fffcf8 !important;
+    color: #8c7361 !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    font-size: 0.8rem !important;
+    padding: 12px 20px !important;
+}
+
+.mat-mdc-cell {
+    padding: 12px 20px !important;
+}
+
+.mat-column-key {
+    font-weight: 600 !important;
+    width: 30%;
+}
+
+
+.table-container input[matInput] {
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: rgba(214, 109, 82, 0.03);
+    border: 1px solid transparent;
+    width: calc(100% - 24px);
+    transition: all 0.2s ease;
+}
+
+.table-container input[matInput]:focus {
+    background: #fff;
+    border-color: rgba(214, 109, 82, 0.3);
+    outline: none;
+}
+
+.empty-state {
+    text-align: center;
+    color: #8c7361;
+    font-style: italic;
+    padding: 24px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 16px;
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    margin-top: 40px;
+}
+
+.btn-save {
+    background-color: #d66d52 !important;
+    color: white !important;
+    padding: 0 32px !important;
+    height: 50px !important;
+    border-radius: 15px !important;
+    box-shadow: 0 8px 20px rgba(221, 101, 71, 0.3) !important;
+}
+
+.btn-save:hover {
+    background-color: #d44724 !important;
+    color: white !important;
+    padding: 0 32px !important;
+    height: 50px !important;
+    border-radius: 15px !important;
+    box-shadow: 0 8px 20px rgba(202, 44, 5, 0.3) !important;
+}
+
+.form-actions button[mat-stroked-button] {
+    padding: 0 32px !important;
+    height: 50px !important;
+    border-radius: 15px !important;
+}
+
+
+
+/* Loading State */
+.loading-state {
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #d66d52;
+    animation: fadeIn 5s ease;
+}
+
+.loading-state mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+}
+
+.pulse {
+    animation: pulse 2s infinite ease-in-out;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+
+    50% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+}
+
+@media (max-width: 768px) {
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .details-card {
+        padding: 24px;
+    }
+}
+
+/* Table Styles */

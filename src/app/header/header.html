@@ -1,0 +1,15 @@
+<div class="header-container">
+    <div class="logo-section">
+        <button mat-icon-button class="home-btn" (click)="goToHome()">
+            <mat-icon>home</mat-icon>
+        </button>
+        <h1>Magic Inventory</h1>
+    </div>
+
+    <div class="user-section">
+        @if (userLoggedIn.role === Role.ADMIN) {
+        <span class="admin-badge">Admin</span>
+        }
+        <button mat-button class="logout-btn" (click)="logout()">Logout</button>
+    </div>
+</div>
