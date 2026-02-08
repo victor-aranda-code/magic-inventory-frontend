@@ -75,28 +75,35 @@
                     </div>
                     }
                     } @else {
-                    <mat-form-field appearance="outline">
-                        <mat-label>Item Name</mat-label>
-                        <input matInput [(ngModel)]="item.name" />
-                    </mat-form-field>
+                        <mat-form-field appearance="outline">
+                            <mat-label>Item Name</mat-label>
+                            <input matInput [(ngModel)]="item.name" />
+                        </mat-form-field>
 
-                    <mat-form-field appearance="outline">
-                        <mat-label>Category</mat-label>
-                        <input matInput [(ngModel)]="item.category" />
-                    </mat-form-field>
+                        <mat-form-field appearance="outline">
+                            <mat-label>Category</mat-label>
+                            <input matInput [(ngModel)]="item.category" />
+                        </mat-form-field>
 
-                    <mat-form-field appearance="outline">
-                        <mat-label>Location</mat-label>
-                        <input matInput [(ngModel)]="item.location" />
-                    </mat-form-field>
+                        <mat-form-field appearance="outline">
+                            <mat-label>Location</mat-label>
+                            <input matInput [(ngModel)]="item.location" />
+                        </mat-form-field>
 
-                    <mat-form-field appearance="outline">
-                        <mat-label>Description</mat-label>
-                        <textarea matInput [(ngModel)]="item.description" rows="3"></textarea>
-                    </mat-form-field>
-
-                    <button mat-stroked-button class="btn-autocomplete" (click)="autocompleteDetails()">
-                        <mat-icon>auto_fix_high</mat-icon> Autocomplete </button>
+                        <mat-form-field appearance="outline">
+                            <mat-label>Description</mat-label>
+                            <textarea matInput [(ngModel)]="item.description" rows="3"></textarea>
+                        </mat-form-field>
+                        @if (this.newImageFile || this.imageUrl){
+                            @if (!autocompleteInProcess) {
+                                <button mat-stroked-button class="btn-autocomplete" (click)="autocompleteDetails()">
+                                    <mat-icon>auto_fix_high</mat-icon>
+                                    <span>Autocomplete</span>
+                                </button>
+                            } @else {
+                                <mat-spinner class="spinner" [diameter]="18"></mat-spinner>
+                            }
+                        }
                     }
                 </div>
             </div>
@@ -169,8 +176,8 @@
         @if (newItem || editMode) {
         <div class="form-actions">
             <button mat-stroked-button (click)="cancel()">Cancel</button>
-            <button mat-flat-button class="btn-save" (click)="save()">
-                <mat-icon>save</mat-icon> Save Artifact
+            <button mat-flat-button class="btn-save" (click)="save()" [disabled]="isSavingInProgress">
+                <mat-icon>save</mat-icon> Save item
             </button>
         </div>
         }
