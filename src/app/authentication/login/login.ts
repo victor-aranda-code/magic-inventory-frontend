@@ -8,9 +8,11 @@ import { FormsModule } from "@angular/forms";
 import { AuthResponse } from '../../models/AuthResponse';
 import { AuthUtils } from '../../utils/auth-utils';
 import { ChangeDetectorRef } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { environment } from '../../../environments/environment';
 @Component({
   selector: 'app-login',
-  imports: [MatFormField, MatIcon, MatLabel, MatInputModule, FormsModule],
+  imports: [MatFormField, MatIcon, MatLabel, MatInputModule, FormsModule, MatButtonModule],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -22,6 +24,7 @@ export class Login {
   password: any;
   wrongCredentials = false;
   cdr: ChangeDetectorRef;
+  isProduction = environment.production;
   constructor(router: Router, authService: AuthService, cdr: ChangeDetectorRef) { this.router = router; this.authService = authService; this.cdr = cdr; }
   ngOnInit() {
     localStorage.clear();

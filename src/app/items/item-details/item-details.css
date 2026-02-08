@@ -176,6 +176,19 @@ mat-form-field {
     border-radius: 12px !important;
     height: 48px !important;
     margin-top: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 10px !important;
+}
+
+.spinner {
+    display: inline-block;
+    margin-left: 20px;
+}
+
+.spinner ::ng-deep circle {
+    stroke: #d66d52 !important;
 }
 
 /* Additional Data Table */
@@ -283,6 +296,8 @@ mat-form-field {
     height: 50px !important;
     border-radius: 15px !important;
 }
+
+
 
 /* Loading State */
 .loading-state {

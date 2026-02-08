@@ -1,0 +1,58 @@
+name: Build Push and Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
+
+      - name: Extract App Info
+        run: |
+          app_name=$(node -p "require('./package.json').name")
+          app_version=$(node -p "require('./package.json').version")
+          repository_lower=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          echo "app_name=$app_name" >> $GITHUB_ENV
+          echo "app_version=$app_version" >> $GITHUB_ENV
+          echo "REPOSITORY=$repository_lower" >> $GITHUB_ENV
+          echo "PACKAGE_PATH=ghcr.io/$repository_lower" >> $GITHUB_ENV
+    
+      - name: Get Build Time
+        run: |
+          build_time=$(TZ='Europe/Paris' date '+%Y-%m-%d %H:%M:%S')
+          echo "build_time=$build_time" >> $GITHUB_ENV
+
+      - name: Update index.html with Version Info
+        run: |
+          sed -i "s@<head>@<head>\n<!-- App Version: ${{ env.app_version }} | Build Time: ${{ env.build_time }} -->@" src/index.html
+
+      - name: Build and Tag and Push Docker image
+        run: |
+          docker build -t ${{ env.REPOSITORY }}:${{ env.app_version }} .
+          docker tag ${{ env.REPOSITORY }}:${{ env.app_version }} ${{ env.PACKAGE_PATH }}:${{ env.app_version }}
+          docker tag ${{ env.REPOSITORY }}:${{ env.app_version }} ${{ env.PACKAGE_PATH }}:latest
+
+      - name: Push Docker image to GitHub Container Registry
+        run: |
+          docker push ${{ env.PACKAGE_PATH }}:${{ env.app_version }}
+          docker push ${{ env.PACKAGE_PATH }}:latest
+
+      - name: Version Info
+        run: |
+          echo "App Name: ${{ env.app_name }}"
+          echo "App Version: ${{ env.app_version }}"

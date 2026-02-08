@@ -34,22 +34,22 @@ export class AuthService {
 
 
     registerUser(user: RegisterRequest): Observable<AuthResponse> {
-        return this.http.post<AuthResponse>(this.url + '/auth/register', user, this.createOptions());
+        return this.http.post<AuthResponse>(this.url + '/api/v1/auth/register', user, this.createOptions());
     }
     login(user: LoginRequest): Observable<AuthResponse> {
-        return this.http.post<AuthResponse>(this.url + '/auth/login', user, this.createOptions());
+        return this.http.post<AuthResponse>(this.url + '/api/v1/auth/login', user, this.createOptions());
     }
     getUserById(id: number): Observable<User> {
-        return this.http.get<User>(this.url + '/users/' + id, this.createOptions());
+        return this.http.get<User>(this.url + '/api/v1/auth/users/' + id, this.createOptions());
     }
     getAllUsers(): Observable<User[]> {
-        return this.http.get<User[]>(this.url + '/users', this.createOptions());
+        return this.http.get<User[]>(this.url + '/api/v1/auth/users', this.createOptions());
     }
     deleteUser(id: string): Observable<void> {
-        return this.http.delete<void>(this.url + '/users/' + id, this.createOptions());
+        return this.http.delete<void>(this.url + '/api/v1/auth/users/' + id, this.createOptions());
     }
     updateUser(user: User): Observable<void> {
-        return this.http.put<void>(this.url + '/users/' + user.id, user, this.createOptions());
+        return this.http.put<void>(this.url + '/api/v1/auth/users/' + user.id, user, this.createOptions());
     }
 
 
