@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   magic-inventory-frontend:
-    image: magic-inventory-frontend:latest
+    image: ghcr.io/victor-aranda-code/magic-inventory-frontend:latest
     restart: always
     ports:
       - "80:80"
@@ -12,7 +12,7 @@ services:
       - BACKEND_URL=http://magic-inventory-backend:8080
 
   magic-inventory-backend:
-    image: magic-inventory-backend:latest
+    image: ghcr.io/victor-aranda-code/magic-inventory-backend:latest
     restart: always
     ports:
       - "8080:8080"
