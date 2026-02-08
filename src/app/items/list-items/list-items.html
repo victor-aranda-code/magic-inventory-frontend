@@ -1,6 +1,24 @@
 <app-header [userLoggedIn]="user"></app-header>
 <main class="list-container">
+    <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search items</mat-label>
+        <input matInput type="search" #itemFilter (keyup.enter)="searchItems(itemFilter.value)">
+        <button mat-icon-button matSuffix (click)="searchItems(itemFilter.value)">
+            <mat-icon>search</mat-icon>
+            </button>
+        </mat-form-field>
+    
+        <mat-slide-toggle class="advanced-search-toggle" [(ngModel)]="isAdvancedSearchChecked">Enable advanced search</mat-slide-toggle>
+    @if (isAdvancedSearchChecked) {
+        <app-advanced-search (onSearchResult)="updateItems($event)"></app-advanced-search>
+    }
     <div class="items-grid">
         <app-card-item *ngFor="let item of items" [item]="item"></app-card-item>
+        @if (items.length === 0) {
+        <div class="no-items">
+            <mat-icon>inventory_2</mat-icon>
+            <p>No items found</p>
+        </div>
+        }
     </div>
 </main>

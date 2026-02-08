@@ -1,24 +1,40 @@
-<div class="container">
-    <h1>Login</h1>
-    <mat-form-field class="username-form-field">
-        <mat-label>Username</mat-label>
-        <input matInput type="text" id="username" [(ngModel)]="username"/>
-    </mat-form-field>
-    <mat-form-field class="password-form-field">
-        <mat-label>Enter your password</mat-label>
-    <input matInput [type]="hidePassword() ? 'password' : 'text'" id="password" [(ngModel)]="password"/>
-    <button class="password-toggle-button"
-      matIconButton
-      matSuffix
-      (click)="clickEvent($event)"
-      [attr.aria-label]="'Hide password'"
-      [attr.aria-pressed]="hidePassword()"
-    >
-      <mat-icon>{{hidePassword() ? 'visibility_off' : 'visibility'}}</mat-icon>
-    </button>
-  </mat-form-field>
-  <p [hidden]="!wrongCredentials" style="color: red;">The credentials are incorrect</p>
+<div class="login-wrapper">
+  <div class="login-card">
+    <header class="brand-header">
+      <h1>Magic Inventory</h1>
+    </header>
 
-  <button mat-raised-button class="login-button" color="primary" (click)="login()">Login</button>
-  <button mat-raised-button class="register-button" color="primary" (click)="router.navigate(['/register']);">Register</button>
+    <main class="form-container">
+      <mat-form-field appearance="outline" class="username-form-field">
+        <mat-label>Username</mat-label>
+        <input matInput type="text" id="username" [(ngModel)]="username" placeholder="Enter your secret name" />
+        <mat-icon matPrefix style="margin-right: 8px;">person</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="password-form-field">
+        <mat-label>Password</mat-label>
+        <input matInput [type]="hidePassword() ? 'password' : 'text'" id="password" [(ngModel)]="password"
+          placeholder="Enter your passphrase" />
+        <mat-icon matPrefix style="margin-right: 8px;">lock</mat-icon>
+        <button class="password-toggle-button" matIconButton matSuffix (click)="clickEvent($event)"
+          [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword()">
+          <mat-icon>{{hidePassword() ? 'visibility_off' : 'visibility'}}</mat-icon>
+        </button>
+      </mat-form-field>
+
+      @if (wrongCredentials) {
+      <div class="error-message">
+        The credentials are incorrect. Please try again.
+      </div>
+      }
+    </main>
+
+    <footer class="actions-container">
+      <button mat-flat-button class="login-button" (click)="login()">Sign In</button>
+      @if (!isProduction) {
+      <button mat-stroked-button class="register-button" (click)="router.navigate(['/register']);">Create an
+        Account</button>
+      }
+    </footer>
+  </div>
 </div>

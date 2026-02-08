@@ -11,9 +11,11 @@ import { Role } from '../../../models/Role';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { AuthUtils } from '../../../utils/auth-utils';
 import { ChangeDetectorRef } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { environment } from '../../../../environments/environment';
 @Component({
   selector: 'app-register',
-  imports: [MatFormField, MatIcon, MatLabel, MatInputModule, FormsModule],
+  imports: [MatFormField, MatIcon, MatLabel, MatInputModule, FormsModule, MatButtonModule],
   templateUrl: './register.html',
   styleUrl: './register.css',
 })
@@ -38,6 +40,12 @@ export class Register {
     this.userErrorMessage = "";
   }
 
+  ngOnInit() {
+    if (environment.production) {
+      this.router.navigate(['/login']);
+    }
+  }
+
   clickEvent(event: MouseEvent) {
     this.passwordVisible = !this.passwordVisible;
   }
@@ -48,7 +56,7 @@ export class Register {
 
   checkPasswords() {
     this.passwordsDoNotMatch = this.password !== this.confirmPassword;
-    if(this.confirmPassword.length === 0) {
+    if (this.confirmPassword.length === 0) {
       this.userErrorMessage = "";
     } else {
       this.userErrorMessage = this.passwordsDoNotMatch ? "Passwords do not match" : "";
@@ -72,7 +80,7 @@ export class Register {
         this.router.navigate(['/home']);
       },
       error: (err: any) => {
-        if(err.status === 409) {
+        if (err.status === 409) {
           this.userErrorMessage = "Error: User already exists";
         } else {
           this.userErrorMessage = "Error: Could not register user";

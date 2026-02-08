@@ -1,9 +1,10 @@
 {
   "name": "magic-inventory-frontend",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "start:prod": "ng serve magic-inventory-frontend --configuration production",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"

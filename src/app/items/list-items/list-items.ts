@@ -13,19 +13,26 @@ import { Header } from "../../header/header";
 import { User } from '../../models/User';
 import { Role } from '../../models/Role';
 import { CardItem } from './card-item/card-item';
+import { AdvancedSearch } from "./search/advanced-search/advanced-search";
+import { MatFormField, MatLabel } from "@angular/material/form-field";
+import { MatSlideToggle } from "@angular/material/slide-toggle";
+import { FormsModule } from '@angular/forms';
+import { MatInputModule } from '@angular/material/input';
 @Component({
     selector: 'app-list-items',
-    imports: [MatButtonModule, MatCardModule, MatGridListModule, MatIconModule, CommonModule, Header, CardItem],
+    imports: [MatButtonModule, MatCardModule, MatGridListModule, MatIconModule, CommonModule, Header, CardItem, AdvancedSearch, MatFormField, MatLabel, MatSlideToggle, FormsModule, MatInputModule],
     templateUrl: './list-items.html',
     styleUrl: './list-items.css',
 })
 export class ListItems {
+
     items: Item[] = [];
     route: ActivatedRoute;
     router: Router;
     user: User;
     protected readonly Role = Role;
     private cdr = inject(ChangeDetectorRef);
+    isAdvancedSearchChecked: boolean = false;
     constructor(private httpService: HttpService, route: ActivatedRoute, router: Router) {
         this.route = route;
         this.router = router;
@@ -54,6 +61,25 @@ export class ListItems {
                         this.cdr.detectChanges();
                     });
                 }
+            });
+        }
+    }
+
+    updateItems(items: Item[]) {
+        this.items = items;
+        this.cdr.detectChanges();
+    }
+
+    searchItems(query: string) {
+        if (query != null && query != '') {
+            this.httpService.findItemByString(query).subscribe(items => {
+                this.items = items.map((item: any) => Item.fromJSON(item));
+                this.cdr.detectChanges();
+            });
+        } else {
+            this.httpService.listAllItems().subscribe(items => {
+                this.items = items.map((item: any) => Item.fromJSON(item));
+                this.cdr.detectChanges();
             });
         }
     }

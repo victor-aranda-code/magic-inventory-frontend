@@ -13,11 +13,12 @@ import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { Header } from "../../header/header";
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-item-details',
   standalone: true,
-  imports: [MatButtonModule, MatIcon, MatTableModule, CommonModule, FormsModule, MatInputModule, Header],
+  imports: [MatButtonModule, MatIcon, MatTableModule, CommonModule, FormsModule, MatInputModule, Header, MatProgressSpinnerModule],
   templateUrl: './item-details.html',
   styleUrl: './item-details.css',
 })
@@ -29,6 +30,7 @@ export class ItemDetails {
   owner?: User;
   newItem: boolean = false;
   editMode: boolean = false;
+  autocompleteInProcess: boolean = false;
   protected readonly Role = Role;
   private httpService = inject(HttpService);
   private authService = inject(AuthService);
@@ -40,8 +42,9 @@ export class ItemDetails {
   protected displayedColumns: string[] = ['key', 'value', 'actions'];
   protected displayedColumnsReadOnly: string[] = ['key', 'value'];
   imageFile: string;
-  newImageFile: string;
+  newImageFile: any;
   sanitizer: DomSanitizer;
+  isSavingInProgress: boolean = false;
 
   constructor(router: Router, sanitizer: DomSanitizer) {
     this.newItem = false;
@@ -77,16 +80,16 @@ export class ItemDetails {
   }
   loadItem(itemId: string) {
     this.httpService.findItemById(itemId).subscribe({
-        next: (item) => {
-          this.item = Item.fromJSON(item);
-          this.afterItemLoaded();
-          this.cdr.detectChanges();
-        },
-        error: (err) => {
-          console.error("Error loading item", err);
-          this.cdr.detectChanges();
-        }
-      });
+      next: (item) => {
+        this.item = Item.fromJSON(item);
+        this.afterItemLoaded();
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error("Error loading item", err);
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   afterItemLoaded() {
@@ -139,9 +142,61 @@ export class ItemDetails {
     this.additionalDataList.splice(index, 1);
     this.additionalDataList = [...this.additionalDataList];
   }
+
   autocompleteDetails() {
-    throw new Error('Method not implemented.');
+    let currentItem: Item;
+    if (this.item) {
+      currentItem = this.item;
+    } else {
+      currentItem = Item.builder().build();
+    }
+    let imageToUse: string;
+    if (this.newImageFile) {
+      imageToUse = this.newImageFile;
+    } else if (this.imageUrl) {
+      imageToUse = this.imageFile;
+    } else {
+      return;
+    }
+    this.autocompleteInProcess = true;
+    this.httpService.autocompleteDetails(imageToUse, currentItem).subscribe(
+      (item) => {
+        this.autocompleteInProcess = false;
+        this.updateEmptyItemData(Item.fromJSON(item), this.item);
+        this.cdr.detectChanges();
+      },
+      (err) => {
+        this.autocompleteInProcess = false;
+        this.cdr.detectChanges();
+      }
+    );
   }
+
+  private updateEmptyItemData(sourceItem: Item, targetItem: Item | undefined) {
+    if (!targetItem) {
+      return;
+    }
+    if (targetItem.name == null || targetItem.name == "") {
+      targetItem.name = sourceItem.name;
+    }
+    if (targetItem.category == null || targetItem.category == "") {
+      targetItem.category = sourceItem.category;
+    }
+    if (targetItem.description == null || targetItem.description == "") {
+      targetItem.description = sourceItem.description;
+    }
+    if (targetItem.location == null || targetItem.location == "") {
+      targetItem.location = sourceItem.location;
+    }
+    for (let [key, value] of sourceItem.additionalData) {
+      if (targetItem.additionalData.get(key) == null || targetItem.additionalData.get(key) == "") {
+        targetItem.additionalData.set(key, value);
+        this.additionalDataList.push({ key: key, value: value });
+      }
+    }
+    this.additionalDataList = [...this.additionalDataList];
+  }
+
   deleteItem() {
     if (this.item?.id) {
       this.httpService.deleteItem(this.item.id).subscribe(() => {
@@ -172,6 +227,7 @@ export class ItemDetails {
     if (!this.editMode && !this.newItem) {
       return;
     }
+    this.isSavingInProgress = true;
     //Copy edited item
     let itemToUpdate = Item.builder()
       .withId(this.item.id)
@@ -194,7 +250,8 @@ export class ItemDetails {
     if (this.newItem) {
       this.httpService.addItem(itemToUpdate).subscribe((item) => {
         this.item = Item.fromJSON(item);
-        this.router.navigate(['/items/' + this.item.id]);
+        this.updateImageOnBackend();
+        this.cdr.detectChanges();
       });
     }
     //Update item
@@ -202,6 +259,7 @@ export class ItemDetails {
       if (this.editMode) {
         this.httpService.updateItem(itemToUpdate).subscribe((item) => {
           this.item = Item.fromJSON(item);
+          this.updateImageOnBackend();
           this.router.navigate(['/items/' + this.item.id]);
           this.editMode = false;
           this.newItem = false;
@@ -209,20 +267,27 @@ export class ItemDetails {
         });
       }
     }
-    
+
+  }
+  updateImageOnBackend() {
     if (!this.item || !this.item.id) {
       return;
     }
     //Update image
-    if ((this.editMode || this.newItem) && this.imageUrl !== "") {
+    if ((this.editMode || this.newItem) && this.imageUrl !== "" && this.newImageFile !== "") {
       this.httpService.addImage(this.item.id, this.newImageFile).subscribe((updatedItem) => {
         if (this.item) {
           this.item.imageId = updatedItem.imageId;
           this.loadImage();
           this.cdr.detectChanges();
         }
+        if (this.newItem && this.item?.id) {
+          this.router.navigate(['/items/' + this.item.id]);
+          this.newItem = false;
+        }
+        this.isSavingInProgress = false;
       });
-    //Image deleted
+      //Image deleted
     } else if (this.editMode && (this.item.imageId != null && this.imageUrl === "")) {
       this.httpService.deleteImage(this.item.imageId).subscribe(() => {
         if (this.item) {
@@ -230,10 +295,10 @@ export class ItemDetails {
           this.loadImage();
           this.cdr.detectChanges();
         }
+        this.isSavingInProgress = false;
       });
     }
   }
-
   onImageChanged(event: any) {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
