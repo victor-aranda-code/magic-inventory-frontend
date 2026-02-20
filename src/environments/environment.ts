@@ -4,6 +4,6 @@ export const environment = {
     production: false,
     NAME: pkg.name,
     VERSION: pkg.version,
-    BACKEND_URL: 'http://localhost:8080',
+    BACKEND_URL: '',
     MOCK_BACKEND: false
 };
