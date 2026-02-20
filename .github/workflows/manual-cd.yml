@@ -11,9 +11,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: 'Deploy to Azure Web App'
-        uses: azure/webapps-deploy@v3
+      - name: 'Set K8s Context'
+        uses: azure/k8s-set-context@v4
         with:
-          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          configuration-file: 'docker-compose.yml'
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBECONFIG }}
+
+      - name: 'Deploy to AKS'
+        uses: azure/k8s-deploy@v5
+        with:
+          manifests: |
+            deployment.yml
+          images: |
+            ghcr.io/victor-aranda-code/magic-inventory-backend:latest
+            ghcr.io/victor-aranda-code/magic-inventory-frontend:latest
