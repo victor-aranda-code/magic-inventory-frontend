@@ -1,0 +1,156 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: magic-inventory-backend
+spec:
+  selector:
+    app: magic-inventory-backend
+  ports:
+    - name: https
+      protocol: TCP
+      port: 8443
+      targetPort: 8443
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: magic-inventory-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: magic-inventory-backend
+  template:
+    metadata:
+      labels:
+        app: magic-inventory-backend
+    spec:
+      imagePullSecrets:
+      - name: ghcr-login-secret
+      containers:
+      - name: magic-inventory-backend
+        image: ghcr.io/victor-aranda-code/magic-inventory-backend:latest
+        ports:
+        - containerPort: 8443
+
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: "prod"
+        - name: SPRING_DATA_MONGODB_URI
+          valueFrom:
+            secretKeyRef:
+              name: magic-inventory-secrets
+              key: mongodb-uri
+        #- name: SPRING_DATA_MONGODB_DATABASE
+        #  valueFrom:
+        #    secretKeyRef:
+        #      name: magic-inventory-secrets
+        #      key: mongodb-database
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: magic-inventory-secrets
+              key: jwt-secret
+        - name: AZURE_OPENAI_ENDPOINT
+          valueFrom:
+            secretKeyRef:
+              name: magic-inventory-secrets
+              key: azure-endpoint
+        - name: AZURE_OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: magic-inventory-secrets
+              key: openai-key
+        - name: ALLOWED_ORIGINS
+          valueFrom:
+            secretKeyRef:
+              name: magic-inventory-secrets
+              key: allowed-origins
+        - name: SSL_KEY_STORE_PATH
+          value: "/mnt/secrets-store/keystore-p12"
+
+        - name: SSL_KEY_STORE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: magic-inventory-secrets
+              key: ssl-keystore-password
+        - name: SERVER_PORT
+          value: "8443"
+
+        volumeMounts:
+        - name: secrets-store-inline
+          mountPath: "/mnt/secrets-store"
+          readOnly: true
+      volumes:
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "magic-inventory-secrets-provider"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: magic-inventory-frontend
+spec:
+  type: LoadBalancer
+  selector:
+    app: magic-inventory-frontend
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+    - name: https
+      protocol: TCP
+      port: 443
+      targetPort: 443
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: magic-inventory-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: magic-inventory-frontend
+  template:
+    metadata:
+      labels:
+        app: magic-inventory-frontend
+    spec:
+      imagePullSecrets:
+      - name: ghcr-login-secret
+      containers:
+      - name: magic-inventory-frontend
+        image: ghcr.io/victor-aranda-code/magic-inventory-frontend:latest
+        ports:
+        - containerPort: 80
+        - containerPort: 443
+
+        env:
+        - name: BACKEND_URL
+          value: "https://magic-inventory-backend:8443"
+
+        volumeMounts:
+        - name: secrets-store-inline
+          mountPath: "/mnt/secrets-store"
+          readOnly: true
+        - name: ssl-certs
+          mountPath: "/etc/nginx/ssl"
+          readOnly: true
+      volumes:
+        - name: ssl-certs
+          secret:
+            secretName: frontend-tls-secret
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "magic-inventory-secrets-provider"
+

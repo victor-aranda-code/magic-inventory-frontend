@@ -6,20 +6,31 @@ services:
     restart: always
     ports:
       - "80:80"
+      - "443:443"
     depends_on:
       - magic-inventory-backend
     environment:
-      - BACKEND_URL=http://magic-inventory-backend:8080
+      - BACKEND_URL=https://magic-inventory-backend:8443
+    volumes:
+      - ./certs:/etc/nginx/ssl:ro
 
   magic-inventory-backend:
     image: ghcr.io/victor-aranda-code/magic-inventory-backend:latest
     restart: always
     ports:
-      - "8080:8080"
+      - "8443:8443"
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+      - SERVER_PORT=8443
+      - SSL_KEY_STORE_PATH=/certs/keystore.p12
+      - SSL_KEY_STORE_PASSWORD=${SSL_KEYSTORE_PASSWORD}
+      - SSL_KEY_ALIAS=magic-inventory
       # The following variables should be defined in the Azure Web App Application Settings
-      - MONGODB_URI=${MONGODB_URI}
+      - SPRING_DATA_MONGODB_URI=${MONGODB_URI}
+      - SPRING_DATA_MONGODB_DATABASE=${MONGODB_DATABASE}
       - JWT_SECRET=${JWT_SECRET}
-      - AZURE_ENDPOINT=${AZURE_ENDPOINT}
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - AZURE_OPENAI_ENDPOINT=${AZURE_ENDPOINT}
+      - AZURE_OPENAI_API_KEY=${OPENAI_API_KEY}
+    volumes:
+      - ./certs:/certs:ro
+
