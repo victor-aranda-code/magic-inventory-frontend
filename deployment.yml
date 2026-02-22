@@ -6,10 +6,10 @@ spec:
   selector:
     app: magic-inventory-backend
   ports:
-    - name: https
+    - name: http
       protocol: TCP
-      port: 8443
-      targetPort: 8443
+      port: 80
+      targetPort: 8080
 
 ---
 apiVersion: apps/v1
@@ -32,7 +32,7 @@ spec:
       - name: magic-inventory-backend
         image: ghcr.io/victor-aranda-code/magic-inventory-backend:latest
         ports:
-        - containerPort: 8443
+        - containerPort: 8080
 
         env:
         - name: SPRING_PROFILES_ACTIVE
@@ -67,16 +67,8 @@ spec:
             secretKeyRef:
               name: magic-inventory-secrets
               key: allowed-origins
-        - name: SSL_KEY_STORE_PATH
-          value: "/mnt/secrets-store/keystore-p12"
-
-        - name: SSL_KEY_STORE_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: magic-inventory-secrets
-              key: ssl-keystore-password
         - name: SERVER_PORT
-          value: "8443"
+          value: "8080"
 
         volumeMounts:
         - name: secrets-store-inline
@@ -103,10 +95,6 @@ spec:
       protocol: TCP
       port: 80
       targetPort: 80
-    - name: https
-      protocol: TCP
-      port: 443
-      targetPort: 443
 
 ---
 apiVersion: apps/v1
@@ -130,23 +118,16 @@ spec:
         image: ghcr.io/victor-aranda-code/magic-inventory-frontend:latest
         ports:
         - containerPort: 80
-        - containerPort: 443
 
         env:
         - name: BACKEND_URL
-          value: "https://magic-inventory-backend:8443"
+          value: "http://magic-inventory-backend:8080"
 
         volumeMounts:
         - name: secrets-store-inline
           mountPath: "/mnt/secrets-store"
           readOnly: true
-        - name: ssl-certs
-          mountPath: "/etc/nginx/ssl"
-          readOnly: true
       volumes:
-        - name: ssl-certs
-          secret:
-            secretName: frontend-tls-secret
         - name: secrets-store-inline
           csi:
             driver: secrets-store.csi.k8s.io
