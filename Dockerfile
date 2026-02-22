@@ -24,7 +24,5 @@ COPY --from=build /app/dist/magic-inventory-frontend/browser /usr/share/nginx/ht
 COPY nginx.conf /etc/nginx/templates/default.conf.template
 
 EXPOSE 80
-EXPOSE 443
-
 
 CMD ["nginx", "-g", "daemon off;"]
