@@ -121,7 +121,7 @@ spec:
 
         env:
         - name: BACKEND_URL
-          value: "http://magic-inventory-backend:8080"
+          value: "http://magic-inventory-backend:80"
 
         volumeMounts:
         - name: secrets-store-inline
