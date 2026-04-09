@@ -1,59 +1,126 @@
-# MagicInventoryFrontend
+# ✨ Magic Inventory - Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.5.
+Magic Inventory is an AI-powered inventory management system designed for finding quickly items in your inventory. The frontend is built with **Angular 21** and **Angular Material**, providing a sleek, responsive, and modern user interface to manage your collections with ease.
 
-## Development server
+---
 
-To start a local development server, run:
+## 🚀 Key Features
+
+- **Multimodal AI Search**: Find items using text descriptions or by uploading images.
+- **Item Management**: Full CRUD (Create, Read, Update, Delete) operations for your inventory.
+- **Secure Authentication**: Integrated with JWT-based authentication to keep your magic collection safe.
+- **User Management**: Administrative tools to manage platform users.
+- **Modern UI/UX**: Clean design using Angular Material components and responsive layouts.
+
+---
+
+## 🛠️ Technology Stack
+
+- **Framework**: [Angular 21](https://angular.dev/)
+- **UI Components**: [Angular Material](https://material.angular.io/)
+- **Icons**: [Material Design Icons](https://fonts.google.com/icons)
+- **State Management**: RxJS
+- **Authentication**: @auth0/angular-jwt
+- **Server**: Nginx (Dockerized)
+
+---
+
+## 🏃 Getting Started
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (v20 or higher)
+- [npm](https://www.npmjs.com/) (v11 or higher)
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd magic-inventory-frontend
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+### Development Server
+
+Run the following command to start a local development server:
+```bash
+npm start
+```
+Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+
+---
+
+## 🐳 Docker and Deployment
+
+### Docker Build
+
+To build the project into a production-ready Docker image:
 
 ```bash
-ng serve
+docker build -t magic-inventory-frontend .
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
 
-## Code scaffolding
+### Kubernetes Deployment
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+This project includes a `deployment.yml` for deploying to **Azure Kubernetes Service (AKS)**. It uses `Nginx` to serve the static files and proxies requests starting with `/api` to the backend service.
+
+---
+
+## 🤖 CI/CD with GitHub Actions
+
+This project uses GitHub Actions to automate testing, building, and deployment:
+
+- **Angular CI**: Runs on every pull request to the `develop` branch. It ensures the application builds correctly in a development environment.
+- **Build, Tag & Push**: Triggered on any push or pull request to the `main` branch. This workflow:
+  - Generates versioning based on `package.json`.
+  - Injects build metadata (version and timestamp) into the `index.html`.
+  - Builds and tags the Docker image.
+  - Pushes the image to the **GitHub Container Registry (GHCR)**.
+- **Manual Deployment**: A `workflow_dispatch` action that allows developers to manually trigger a deployment of the latest frontend and backend images to the **Azure Kubernetes Service (AKS)** cluster.
+
+---
+
+## ⚙️ Configuration
+
+The project uses Nginx templates for environment variable substitution.
+
+- **`BACKEND_URL`**: The URL of the magic-inventory-backend service (required by Nginx proxy). You can find the backend repository here: https://github.com/victor-aranda-code/magic-inventory-backend
+
+In production, these are managed via Kubernetes ConfigMaps/Secrets and the Azure Key Vault CSI driver.
+
+---
+
+## 🧪 Testing
+
+Execute the unit tests using Vitest:
 
 ```bash
-ng generate component component-name
+npm test
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+---
 
-```bash
-ng generate --help
-```
+## 📂 Project Structure
 
-## Building
+- `src/app/authentication`: Login and registration components.
+- `src/app/items`: Core inventory components (listing, details, search).
+- `src/app/manage-users`: Admin dashboard for user management.
+- `src/app/services`: HTTP and authentication services.
+- `nginx.conf`: Nginx configuration with API proxying.
+- `Dockerfile`: Multi-stage build for optimized production images.
 
-To build the project run:
+---
 
-```bash
-ng build
-```
+## 📄 License
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+This project is licensed under the [MIT License](LICENSE).
 
-## Running unit tests
+## 📝 Notes
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- This project has been generated partially with generative AI.
